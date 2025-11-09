@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TwFunc ドラッグ&ドロップデモ</title>
+  <meta name="description" content="TwFuncライブラリのドラッグ&ドロップ機能（ファイルアップロード、リスト並び替え）のデモページ">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      background-color: #667eea;
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 50px;
+      margin-bottom: 20px;
+      padding: 15px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
+      font-size: 24px;
+    }
+
+    h3 {
+      color: #666;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 18px;
+      padding-left: 15px;
+      border-left: 4px solid #667eea;
+    }
+
+    .intro {
+      background-color: #f8f9ff;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 5px solid #667eea;
+    }
+
+    .intro p {
+      margin: 10px 0;
+      line-height: 1.8;
+    }
+
+    .demo-section {
+      background-color: #fff;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .code {
+      background-color: #f4f4f4;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #c7254e;
+      display: inline-block;
+      margin: 8px 0;
+      border: 1px solid #e0e0e0;
+    }
+
+    .file-list {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      min-height: 50px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .file-item {
+      padding: 10px 15px;
+      margin: 8px 0;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .file-item:hover {
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .file-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .file-size {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .sort-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .sort-list li {
+      padding: 15px 20px;
+      margin: 8px 0;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.2s;
+    }
+
+    .sort-list li:hover {
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .handle {
+      font-size: 22px;
+      color: #999;
+      cursor: move;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .handle:hover {
+      color: #667eea;
+    }
+
+    .sort-result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e8f5e9;
+      border-radius: 5px;
+      border: 1px solid #4caf50;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .note {
+      padding: 15px 20px;
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .github-link {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px;
+      background-color: #f8f9ff;
+      border-radius: 8px;
+    }
+
+    .github-link a {
+      display: inline-block;
+      padding: 12px 30px;
+      background-color: #333;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .github-link a:hover {
+      background-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      color: #fff;
+      font-size: 14px;
+    }
+  </style>
+  <link rel="stylesheet" href="css/func.dropfile.css">
+  <link rel="stylesheet" href="css/func.dropsort.css">
+</head>
+<body>
+  <div class="container">
+    <h1>TwFunc ドラッグ&ドロップデモ <span class="badge">v1.0</span></h1>
+
+    <div class="intro">
+      <p><strong>TwFunc</strong>は、HTML属性ベースで簡単に高度な機能を実装できるJavaScriptライブラリです。</p>
+      <p>このデモでは、ファイルのドラッグ&ドロップアップロードと、リスト項目の並び替え機能を紹介します。</p>
+    </div>
+
+    <div class="demo-section">
+      <h2>1. ファイルアップロード（dropfile）</h2>
+
+      <h3>基本的な使い方</h3>
+      <p>ファイルをドロップエリアにドラッグ&ドロップするか、クリックしてファイルを選択できます。</p>
+
+      <div func="dropfile" dropfile-callback="handleFiles1" dropfile-message="ここにファイルをドロップ、またはクリックしてファイルを選択"></div>
+
+      <div class="code">
+        func="dropfile" dropfile-callback="handleFiles1" dropfile-message="ここにファイルをドロップ、またはクリックしてファイルを選択"
+      </div>
+
+      <div id="file-list-1" class="file-list">
+        <em>選択されたファイルがここに表示されます</em>
+      </div>
+
+      <h3>画像ファイルのみ受付（5MB制限）</h3>
+      <p>ファイルタイプと最大サイズを制限できます。</p>
+
+      <div func="dropfile" dropfile-callback="handleFiles2" dropfile-accept="image/*" dropfile-maxsize="5" dropfile-message="画像ファイルをドロップ（最大5MB）"></div>
+
+      <div class="code">
+        func="dropfile" dropfile-callback="handleFiles2" dropfile-accept="image/*" dropfile-maxsize="5" dropfile-message="画像ファイルをドロップ（最大5MB）"
+      </div>
+
+      <div id="file-list-2" class="file-list">
+        <em>選択された画像ファイルがここに表示されます</em>
+      </div>
+
+      <h3>単一ファイルのみ（PDF・Word）</h3>
+      <p>複数ファイルを禁止し、特定の拡張子のみ受け付けます。</p>
+
+      <div func="dropfile" dropfile-callback="handleFiles3" dropfile-multiple="false" dropfile-accept=".pdf,.doc,.docx" dropfile-message="PDFまたはWordファイルを1つドロップ"></div>
+
+      <div class="code">
+        func="dropfile" dropfile-callback="handleFiles3" dropfile-multiple="false" dropfile-accept=".pdf,.doc,.docx" dropfile-message="PDFまたはWordファイルを1つドロップ"
+      </div>
+
+      <div id="file-list-3" class="file-list">
+        <em>選択されたファイルがここに表示されます</em>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>2. リスト項目の並び替え（dropsort）</h2>
+
+      <h3>基本的な並び替え</h3>
+      <p>リスト項目全体をドラッグして並び替えできます。</p>
+
+      <ul class="sort-list" func="dropsort" dropsort-callback="handleSort1">
+        <li>📝 項目1 - ドラッグして移動</li>
+        <li>📝 項目2 - ドラッグして移動</li>
+        <li>📝 項目3 - ドラッグして移動</li>
+        <li>📝 項目4 - ドラッグして移動</li>
+        <li>📝 項目5 - ドラッグして移動</li>
+      </ul>
+
+      <div class="code">
+        func="dropsort" dropsort-callback="handleSort1"
+      </div>
+
+      <div id="sort-result-1" class="sort-result"></div>
+
+      <h3>ハンドル指定の並び替え</h3>
+      <p>ハンドル（≡）をドラッグした時のみ並び替えができます。テキスト選択も可能です。</p>
+
+      <ul class="sort-list" func="dropsort" dropsort-handle=".handle" dropsort-callback="handleSort2">
+        <li><span class="handle">≡</span> タスク1 - このテキストは選択できます</li>
+        <li><span class="handle">≡</span> タスク2 - テキストをコピーできます</li>
+        <li><span class="handle">≡</span> タスク3 - ハンドルだけでドラッグ</li>
+        <li><span class="handle">≡</span> タスク4 - 便利な機能です</li>
+        <li><span class="handle">≡</span> タスク5 - 使ってみてください</li>
+      </ul>
+
+      <div class="code">
+        func="dropsort" dropsort-handle=".handle" dropsort-callback="handleSort2"
+      </div>
+
+      <div id="sort-result-2" class="sort-result"></div>
+
+      <div class="note">
+        <strong>💡 ヒント：</strong>
+        ハンドルを指定すると、項目内のテキストが選択可能になります。リンクやボタンがある場合に便利です。
+      </div>
+    </div>
+
+    <div class="github-link">
+      <p><strong>ソースコードを見る</strong></p>
+      <a href="https://github.com/yourusername/twfunc-demo" target="_blank">GitHub リポジトリ</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 TwFunc Demo. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    import TwFunc from './js/func.js';
+    window.TwFunc = TwFunc;
+
+    // 機能を作成
+    TwFunc.create("dropfile,dropsort");
+  </script>
+
+  <script>
+    // ファイルアップロード用のコールバック関数
+    function handleFiles1(files, element) {
+      displayFiles(files, 'file-list-1');
+    }
+
+    function handleFiles2(files, element) {
+      displayFiles(files, 'file-list-2');
+    }
+
+    function handleFiles3(files, element) {
+      displayFiles(files, 'file-list-3');
+    }
+
+    function displayFiles(files, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      if (files.length === 0) {
+        container.innerHTML = '<em>ファイルが選択されていません</em>';
+        return;
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+
+        const fileName = document.createElement('span');
+        fileName.className = 'file-name';
+        fileName.textContent = file.name;
+
+        const fileSize = document.createElement('span');
+        fileSize.className = 'file-size';
+        fileSize.textContent = formatFileSize(file.size);
+
+        fileItem.appendChild(fileName);
+        fileItem.appendChild(fileSize);
+        container.appendChild(fileItem);
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // 並び替え用のコールバック関数
+    function handleSort1(element, oldIndex, newIndex) {
+      const result = document.getElementById('sort-result-1');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ 並び替え完了！</strong><br>「${element.textContent.trim()}」を位置 ${oldIndex + 1} から 位置 ${newIndex + 1} に移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    function handleSort2(element, oldIndex, newIndex) {
+      const result = document.getElementById('sort-result-2');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ 並び替え完了！</strong><br>「${element.textContent.trim()}」を位置 ${oldIndex + 1} から 位置 ${newIndex + 1} に移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    // グローバルに登録
+    window.handleFiles1 = handleFiles1;
+    window.handleFiles2 = handleFiles2;
+    window.handleFiles3 = handleFiles3;
+    window.handleSort1 = handleSort1;
+    window.handleSort2 = handleSort2;
+  </script>
+</body>
+</html>

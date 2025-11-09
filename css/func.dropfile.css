@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+/* ドラッグ&ドロップファイルアップロード */
+[func*="dropfile"] {
+  position: relative;
+  min-height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+[func*="dropfile"]:hover {
+  border-color: #999;
+  background-color: #f0f0f0;
+}
+
+[func*="dropfile"].dragover {
+  border-color: #0A6CCC;
+  background-color: #e8f4fd;
+  transform: scale(1.02);
+}
+
+[func*="dropfile"] .dropfile-message {
+  color: #666;
+  font-size: 14px;
+  pointer-events: none;
+  user-select: none;
+}
+
+[func*="dropfile"].dragover .dropfile-message {
+  color: #0A6CCC;
+  font-weight: bold;
+}

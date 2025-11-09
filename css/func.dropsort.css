@@ -1,0 +1,31 @@
+@charset "UTF-8";
+
+/* ドラッグ&ドロップ並び替え */
+[func*="dropsort"] {
+  position: relative;
+}
+
+[func*="dropsort"] > [draggable="true"] {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+[func*="dropsort"] > .dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  background-color: #f0f0f0;
+}
+
+[func*="dropsort"] > .dragover {
+  border-top: 2px solid #0A6CCC;
+  margin-top: 2px;
+}
+
+[func*="dropsort"] > [draggable="true"]:hover {
+  background-color: #f9f9f9;
+}
+
+/* ハンドル指定時のスタイル */
+[func*="dropsort"] [draggable="true"] {
+  user-select: none;
+}
