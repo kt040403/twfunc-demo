@@ -223,6 +223,7 @@
   </style>
   <link rel="stylesheet" href="css/func.dropfile.css">
   <link rel="stylesheet" href="css/func.dropsort.css">
+  <link rel="stylesheet" href="css/func.dropmove.css">
 </head>
 <body>
   <div class="container">
@@ -319,6 +320,70 @@
       </div>
     </div>
 
+    <div class="demo-section">
+      <h2>3. リスト間の移動（dropmove）</h2>
+
+      <h3>基本的な使い方</h3>
+      <p>左のリストから右のリストへ、またはその逆にアイテムをドラッグ&ドロップで移動できます。</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0;">
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 20px; border: 2px solid #ddd;">
+          <h4 style="margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea; color: #667eea;">📋 候補ユーザー</h4>
+          <ul class="sort-list" func="dropmove" dropmove-group="users" dropmove-callback="handleMoveUser">
+            <li>👤 田中太郎</li>
+            <li>👤 佐藤花子</li>
+            <li>👤 鈴木一郎</li>
+            <li>👤 高橋美咲</li>
+          </ul>
+        </div>
+
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 20px; border: 2px solid #ddd;">
+          <h4 style="margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea; color: #667eea;">✅ 登録ユーザー</h4>
+          <ul class="sort-list" func="dropmove" dropmove-group="users" dropmove-callback="handleMoveUser">
+            <li>👤 山田太郎</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code">
+        func="dropmove" dropmove-group="users" dropmove-callback="handleMoveUser"
+      </div>
+
+      <div id="move-result-1" class="sort-result"></div>
+
+      <h3>タスク管理（ハンドル付き）</h3>
+      <p>ハンドル（≡）をドラッグして、TODOリストと完了リスト間でタスクを移動できます。</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0;">
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 20px; border: 2px solid #ddd;">
+          <h4 style="margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea; color: #667eea;">📝 TODO</h4>
+          <ul class="sort-list" func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleMoveTask">
+            <li><span class="handle">≡</span> プロジェクト資料を作成</li>
+            <li><span class="handle">≡</span> 会議の議事録をまとめる</li>
+            <li><span class="handle">≡</span> メールの返信をする</li>
+          </ul>
+        </div>
+
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 20px; border: 2px solid #ddd;">
+          <h4 style="margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea; color: #667eea;">✔️ 完了</h4>
+          <ul class="sort-list" func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleMoveTask">
+            <li><span class="handle">≡</span> 朝のミーティング</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code">
+        func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleMoveTask"
+      </div>
+
+      <div id="move-result-2" class="sort-result"></div>
+
+      <div class="note">
+        <strong>💡 ヒント：</strong>
+        同じ<code>dropmove-group</code>を持つリスト間でのみ移動できます。リスト内での順序も並び替えできます。
+      </div>
+    </div>
+
     <div class="github-link">
       <p><strong>ソースコードを見る</strong></p>
       <a href="https://github.com/yourusername/twfunc-demo" target="_blank">GitHub リポジトリ</a>
@@ -339,12 +404,8 @@
     window.TwFunc = TwFunc;
     window.TwInputControl = TwInputControl;
 
-    // ベースパスを設定
-    TwFunc.registerBasePath("dropfile", "./js");
-    TwFunc.registerBasePath("dropsort", "./js");
-
-    // 機能を作成
-    TwFunc.create("dropfile,dropsort");
+    // 機能を作成（func.jsと同じディレクトリにあるのでベースパスの設定は不要）
+    TwFunc.create("dropfile,dropsort,dropmove");
   </script>
 
   <script>
@@ -418,12 +479,37 @@
       }, 3000);
     }
 
+    // リスト間移動用のコールバック関数
+    function handleMoveUser(element, fromContainer, toContainer, fromIndex, toIndex) {
+      const userName = element.textContent.trim();
+      const result = document.getElementById('move-result-1');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ 移動完了！</strong><br>「${userName}」をリスト間で移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    function handleMoveTask(element, fromContainer, toContainer, fromIndex, toIndex) {
+      const taskName = element.textContent.trim();
+      const result = document.getElementById('move-result-2');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ タスク移動完了！</strong><br>「${taskName}」をリスト間で移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
     // グローバルに登録
     window.handleFiles1 = handleFiles1;
     window.handleFiles2 = handleFiles2;
     window.handleFiles3 = handleFiles3;
     window.handleSort1 = handleSort1;
     window.handleSort2 = handleSort2;
+    window.handleMoveUser = handleMoveUser;
+    window.handleMoveTask = handleMoveTask;
   </script>
 </body>
 </html>

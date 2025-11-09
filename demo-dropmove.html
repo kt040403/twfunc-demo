@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TwFunc リスト間移動デモ</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    .demo-section {
+      background-color: #fff;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .dual-list-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin: 20px 0;
+    }
+
+    .list-box {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      border: 2px solid #ddd;
+    }
+
+    .list-box h3 {
+      margin: 0 0 15px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .list-box ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .list-box li {
+      padding: 12px 15px;
+      margin: 5px 0;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: move;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-box li:hover {
+      background-color: #f0f4ff;
+      transform: translateX(3px);
+    }
+
+    .handle {
+      font-size: 18px;
+      color: #999;
+      cursor: move;
+    }
+
+    .item-icon {
+      font-size: 20px;
+    }
+
+    .note {
+      padding: 15px 20px;
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .info {
+      padding: 15px 20px;
+      background-color: #d1ecf1;
+      border-left: 4px solid #0c5460;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e8f5e9;
+      border-radius: 5px;
+      border: 1px solid #4caf50;
+      display: none;
+    }
+
+    .code {
+      background-color: #f4f4f4;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #c7254e;
+      display: inline-block;
+      margin: 5px 0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      color: #fff;
+    }
+  </style>
+  <link rel="stylesheet" href="css/func.dropmove.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔄 TwFunc リスト間移動デモ</h1>
+
+    <div class="info">
+      <strong>💡 使い方：</strong> 左のリストから右のリストへ、または右から左へアイテムをドラッグ&ドロップできます。
+    </div>
+
+    <div class="demo-section">
+      <h2>例1: ユーザー登録システム</h2>
+      <p>候補リストから登録リストへユーザーを移動できます。</p>
+
+      <div class="dual-list-container">
+        <div class="list-box">
+          <h3>📋 候補ユーザー</h3>
+          <ul func="dropmove" dropmove-group="users" dropmove-callback="handleUserMove">
+            <li><span class="item-icon">👤</span> 田中太郎</li>
+            <li><span class="item-icon">👤</span> 佐藤花子</li>
+            <li><span class="item-icon">👤</span> 鈴木一郎</li>
+            <li><span class="item-icon">👤</span> 高橋美咲</li>
+            <li><span class="item-icon">👤</span> 伊藤健太</li>
+          </ul>
+        </div>
+
+        <div class="list-box">
+          <h3>✅ 登録ユーザー</h3>
+          <ul func="dropmove" dropmove-group="users" dropmove-callback="handleUserMove">
+            <li><span class="item-icon">👤</span> 山田太郎</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code">
+        func="dropmove" dropmove-group="users" dropmove-callback="handleUserMove"
+      </div>
+
+      <div id="user-result" class="result-box"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>例2: タスク管理（ハンドル付き）</h2>
+      <p>ハンドル（≡）をドラッグすると、テキストの選択やコピーができます。</p>
+
+      <div class="dual-list-container">
+        <div class="list-box">
+          <h3>📝 TODO</h3>
+          <ul func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleTaskMove">
+            <li><span class="handle">≡</span> <span>プロジェクト資料を作成</span></li>
+            <li><span class="handle">≡</span> <span>会議の議事録をまとめる</span></li>
+            <li><span class="handle">≡</span> <span>メールの返信をする</span></li>
+            <li><span class="handle">≡</span> <span>レポートを提出</span></li>
+          </ul>
+        </div>
+
+        <div class="list-box">
+          <h3>✔️ 完了</h3>
+          <ul func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleTaskMove">
+            <li><span class="handle">≡</span> <span>朝のミーティング</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code">
+        func="dropmove" dropmove-group="tasks" dropmove-handle=".handle" dropmove-callback="handleTaskMove"
+      </div>
+
+      <div id="task-result" class="result-box"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>例3: カテゴリ分類</h2>
+      <p>商品を未分類から各カテゴリへ移動できます。</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+        <div class="list-box">
+          <h3>📦 未分類</h3>
+          <ul func="dropmove" dropmove-group="products" dropmove-callback="handleCategoryMove">
+            <li><span class="item-icon">📱</span> スマートフォン</li>
+            <li><span class="item-icon">💻</span> ノートパソコン</li>
+            <li><span class="item-icon">🎧</span> ワイヤレスイヤホン</li>
+            <li><span class="item-icon">⌚</span> スマートウォッチ</li>
+          </ul>
+        </div>
+
+        <div class="list-box">
+          <h3>📱 モバイル機器</h3>
+          <ul func="dropmove" dropmove-group="products" dropmove-callback="handleCategoryMove">
+          </ul>
+        </div>
+
+        <div class="list-box">
+          <h3>🖥️ PC周辺機器</h3>
+          <ul func="dropmove" dropmove-group="products" dropmove-callback="handleCategoryMove">
+          </ul>
+        </div>
+      </div>
+
+      <div id="category-result" class="result-box"></div>
+    </div>
+
+    <div class="note">
+      <strong>💡 ヒント：</strong>
+      <ul style="margin: 10px 0; padding-left: 20px;">
+        <li>同じ<code>dropmove-group</code>を持つリスト間でのみ移動できます</li>
+        <li>ハンドルを指定すると、テキストの選択やコピーが可能になります</li>
+        <li>リスト内でのアイテムの順序も並び替えできます</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 TwFunc Demo. All rights reserved.</p>
+  </footer>
+
+  <script>
+    window.TwFuncVer = "1.0.0";
+  </script>
+
+  <script type="module">
+    import TwFunc, { TwInputControl } from './js/func.js';
+    window.TwFunc = TwFunc;
+    window.TwInputControl = TwInputControl;
+
+    // 機能を作成
+    TwFunc.create("dropmove");
+  </script>
+
+  <script>
+    // ユーザー移動のコールバック
+    function handleUserMove(element, fromContainer, toContainer, fromIndex, toIndex) {
+      const userName = element.textContent.trim();
+      const fromTitle = $(fromContainer).prev('h3').text();
+      const toTitle = $(toContainer).prev('h3').text();
+
+      const result = document.getElementById('user-result');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ 移動完了！</strong><br>「${userName}」を「${fromTitle}」から「${toTitle}」に移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    // タスク移動のコールバック
+    function handleTaskMove(element, fromContainer, toContainer, fromIndex, toIndex) {
+      const taskName = $(element).find('span:last').text().trim();
+      const fromTitle = $(fromContainer).prev('h3').text();
+      const toTitle = $(toContainer).prev('h3').text();
+
+      const result = document.getElementById('task-result');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ タスク更新！</strong><br>「${taskName}」を「${fromTitle}」から「${toTitle}」に移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    // カテゴリ移動のコールバック
+    function handleCategoryMove(element, fromContainer, toContainer, fromIndex, toIndex) {
+      const productName = element.textContent.trim();
+      const fromTitle = $(fromContainer).prev('h3').text();
+      const toTitle = $(toContainer).prev('h3').text();
+
+      const result = document.getElementById('category-result');
+      result.style.display = 'block';
+      result.innerHTML = `<strong>✅ カテゴリ分類完了！</strong><br>「${productName}」を「${fromTitle}」から「${toTitle}」に移動しました。`;
+
+      setTimeout(() => {
+        result.style.display = 'none';
+      }, 3000);
+    }
+
+    // グローバルに登録
+    window.handleUserMove = handleUserMove;
+    window.handleTaskMove = handleTaskMove;
+    window.handleCategoryMove = handleCategoryMove;
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+@charset "UTF-8";
+
+/* リスト間のドラッグ&ドロップ移動 */
+[func*="dropmove"] {
+  position: relative;
+  min-height: 50px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+}
+
+[func*="dropmove"].dragover {
+  border-color: #667eea;
+  background-color: #f0f4ff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[func*="dropmove"] > [draggable="true"] {
+  transition: all 0.2s ease;
+  position: relative;
+  margin: 5px 0;
+}
+
+[func*="dropmove"] > .dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  background-color: #e3e8ff;
+}
+
+[func*="dropmove"] > [draggable="true"]:hover {
+  background-color: #f9f9f9;
+}
+
+/* ハンドル指定時のスタイル */
+[func*="dropmove"] [draggable="true"] {
+  user-select: none;
+}
+
+/* 空のリスト用のプレースホルダー */
+[func*="dropmove"]:empty::before {
+  content: "ここにアイテムをドロップ";
+  display: block;
+  text-align: center;
+  color: #999;
+  padding: 30px;
+  font-size: 14px;
+}
