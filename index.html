@@ -329,9 +329,19 @@
     <p>&copy; 2025 TwFunc Demo. All rights reserved.</p>
   </footer>
 
+  <script>
+    // TwFuncバージョン設定（必須）
+    window.TwFuncVer = "1.0.0";
+  </script>
+
   <script type="module">
-    import TwFunc from './js/func.js';
+    import TwFunc, { TwInputControl } from './js/func.js';
     window.TwFunc = TwFunc;
+    window.TwInputControl = TwInputControl;
+
+    // ベースパスを設定
+    TwFunc.registerBasePath("dropfile", "./js");
+    TwFunc.registerBasePath("dropsort", "./js");
 
     // 機能を作成
     TwFunc.create("dropfile,dropsort");

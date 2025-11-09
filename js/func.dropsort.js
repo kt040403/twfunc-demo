@@ -1,3 +1,5 @@
+import TwFunc from './func.js';
+
 //==============================================================================
 //
 // dropsort extends TwFunc
@@ -78,7 +80,7 @@ export default class dropsort extends TwFunc {
    * 独自CSSを持っているかどうか
    * @type {boolean}
    */
-  originalCss = true;
+  originalCss = false;
 
   /**
    * デフォルトオプション

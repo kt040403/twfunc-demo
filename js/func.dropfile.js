@@ -1,3 +1,5 @@
+import TwFunc from './func.js';
+
 //==============================================================================
 //
 // dropfile extends TwFunc
@@ -64,7 +66,7 @@ export default class dropfile extends TwFunc {
    * 独自CSSを持っているかどうか
    * @type {boolean}
    */
-  originalCss = true;
+  originalCss = false;
 
   /**
    * デフォルトオプション
